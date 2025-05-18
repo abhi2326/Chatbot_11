@@ -6,3 +6,4 @@ faiss-cpu
 huggingface-hub
 sentence-transformers
 python-dotenv
+beautifulsoup4
