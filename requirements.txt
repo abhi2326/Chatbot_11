@@ -1,9 +1,9 @@
 streamlit
-scrapy
-playwright
+beautifulsoup4
+requests
 langchain
+langchain-community
 faiss-cpu
 huggingface-hub
-sentence-transformers
+transformers
 python-dotenv
-beautifulsoup4
