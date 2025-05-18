@@ -7,3 +7,4 @@ faiss-cpu
 huggingface-hub
 transformers
 python-dotenv
+playwright
