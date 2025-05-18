@@ -1,5 +1,9 @@
 import streamlit as st
-import os  # NEW: Needed to check/create data folder
+import os
+import subprocess  # NEW: Needed to install Playwright browsers
+
+# Automatically install Playwright browsers if not already installed
+subprocess.run(["playwright", "install"], check=True)
 
 from scraper.static_scraper import scrape_static
 from scraper.dynamic_scraper import scrape_dynamic
