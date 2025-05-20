@@ -1,22 +1,45 @@
-from langchain.chains import RetrievalQA
 from langchain.llms import HuggingFaceHub
-from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 
-# Initialize the language model
+# Initialize Zephyr-7B-Beta LLM once (reuse it)
 llm = HuggingFaceHub(
-    repo_id="mistralai/Mistral-7B-Instruct-v0.1",
-    model_kwargs={"temperature": 0.2}
+    repo_id="HuggingFaceH4/zephyr-7b-beta",
+    model_kwargs={
+        "temperature": 0.3,
+        "max_new_tokens": 512,
+        "top_k": 50,
+        "repetition_penalty": 1.1,
+    }
 )
 
-# Function to get response from the QA chain
+prompt_template = PromptTemplate(
+    input_variables=["context", "question"],
+    template="""
+<|system|>
+You are a helpful, honest, and concise assistant.
+Use the following context to answer the user's question.
+If you don’t know the answer, say "I don't know" and do not make up facts.
+</s>
+<|user|>
+Context:
+{context}
+
+Question:
+{question}
+</s>
+<|assistant|>
+"""
+)
+
 def get_chat_response(question, retriever):
-    # Use chain_type="stuff" (can also use "map_reduce", etc. depending on needs)
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         retriever=retriever,
-        chain_type="stuff",  # default and simplest
-        return_source_documents=True  # optional, good for transparency
+        chain_type="stuff",
+        chain_type_kwargs={"prompt": prompt_template},
+        return_source_documents=False
     )
-
-    result = qa_chain({"query": question})
-    return result
+    # Use invoke with key "query" as expected
+    result = qa_chain.invoke({"query": question})
+    return result["result"]
