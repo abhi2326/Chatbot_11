@@ -1,8 +1,8 @@
 import streamlit as st
 import os
-import subprocess  # NEW: Needed to install Playwright browsers
+import subprocess  # To install Playwright browsers if needed
 
-# Automatically install Playwright browsers if not already installed
+# Automatically install Playwright browsers (if you haven't done this before)
 subprocess.run(["playwright", "install"], check=True)
 
 from scraper.static_scraper import scrape_static
@@ -31,6 +31,7 @@ if st.button("Scrape and Load"):
         with open("data/scraped_content.txt", "w", encoding="utf-8") as f:
             f.write(raw_content)
 
+        # Process text and create vectorstore & retriever
         docs = process_text(raw_content)
         vectordb = get_vectorstore(docs)
         st.session_state.retriever = get_retriever(vectordb)
@@ -42,6 +43,7 @@ if "chat_history" not in st.session_state:
 if prompt := st.chat_input("Ask something about the website"):
     if "retriever" in st.session_state:
         st.chat_message("user").write(prompt)
+        # Updated get_chat_response call with correct signature:
         response = get_chat_response(prompt, st.session_state.retriever)
         st.chat_message("assistant").write(response)
         st.session_state.chat_history.append((prompt, response))
